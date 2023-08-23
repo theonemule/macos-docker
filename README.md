@@ -4,6 +4,8 @@
 
 This little project is adapted from https://github.com/kholia/OSX-KVM, a great build for running MacOS/OSX in a container.
 
+**This requires that you have KVM installed on your machine.**
+
 To run this, either build the image from this source or run it from the online repo.
 
 `docker run -p 8081:8080 --device /dev/kvm blaize/macos-docker`
