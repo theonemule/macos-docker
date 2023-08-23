@@ -1,25 +1,22 @@
-# QEMU in a Linux Container. Run Windows VMs and Connect Via a Browser!
+# Run a MacOS (OSX) Virtual Machine in a Docker Container
 
-[<img src="servercontainer.jpg" width="50%">](https://youtu.be/NVqP40Sv2Xc)
+[<img src="macos-docker.jpg" width="50%">](https://youtu.be/0imazKABp10)
 
-(Yeah... that's about as crazy as it sounds, but hey, it works. )
+This little project is adapted from https://github.com/kholia/OSX-KVM, a great build for running MacOS/OSX in a container.
 
-1. Build the Docker File
-2. Run the Docker container
-`
-docker run -p 8081:8080 -p 8881:8888 -v /root:/isos qemu
-`
+To run this, either build the image from this source or run it from the online repo.
 
-The -p forwards ports. You can use whatever ports you want, but 8080 is for the NoVNC client, and 8888 is for a web app. It's optional if you don't want to use an app like I did. Use -v to mount a folder to store your iso files and VHD files.
+`docker run -p 8081:8080 --device /dev/kvm blaize/macos-docker`
 
-3.  Connect to the container using your browser and select vnc.html. Login to NoVNC. The default password is "password1"
-4.  You'll be connected to the container in LXTerminal. You can use Qemu commands to create a the VM
-5.  Create a VHD with qemu-img qemu-img: `create -f vpc /isos/server2008.vhd 10G`
+This container can take several inputs for environment variables. You can add these by using the -e flag.
 
-	The -f is for format. It creates a VPC format commonly used by hypervisors. The next paramater is the path to the file. Put this outside the container in the folder you mounted. The last paramter is size.
-   
-6.  Create a new VM: `qemu-system-i386 -cpu pentium -m 2G  -hda /isos/2008.vhd -cdrom /isos/server2008.iso -boot d -nic user,model=e1000,hostfwd=tcp::8888-:80`
+`docker run -p 8081:8080  -e OSXVERSION=big-sur --device /dev/kvm blaize/macos-docker`
 
-	This creates a 32-bit emulation of an x86 CPU. -m tells it yo use 2 Gigs of RAM. The -hda is the path to your VHD. -cdrom is the path to your Windows ISO. -book d tells it to boot from the VHD first. -nic tells it to use SLiRP (a user-mode network stack) and use an e1000 NIC for compatibility. The hostfwd forwards port 8888 from the container to port 80 on the VM.
+* `OSXVERSION` -- Default is big-sur. You can select high-sierra, mojave, catalina, big-sur, monterey, or ventura
+* `DISKSIZE` -- Default is 128G. The size of the disk 64G, 128G etc. 
+* `ALLOCATED_RAM` -- Default is 7192. You can use any number, but greater than 4096 is recommended.
+* `CPU_SOCKETS` -- Default is 1. 
+* `CPU_CORES` -- Default is 2. 2 or greater is recommended. 
+* `CPU_THREADS` -- Default is 4. 4 or more is recommended.
 
-7. Install Windows and enjoy your VM.
+Enjoy your VM.
